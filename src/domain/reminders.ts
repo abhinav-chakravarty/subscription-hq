@@ -1,0 +1,4 @@
+import type { Subscription } from './subscription'
+import { addDays } from './dates'
+export type Reminder = { subscriptionId:string; date:string; daysBefore:number }
+export function eligibleReminders(subscriptions: Subscription[], today:string) { const sent=new Set<string>(); return subscriptions.flatMap(subscription => { if(subscription.archivedAt || !['active','trial'].includes(subscription.status) || !subscription.reminderSettings.enabled || !/^\d{4}-\d{2}-\d{2}$/.test(subscription.nextRenewalDate) || Number.isNaN(Date.parse(`${subscription.nextRenewalDate}T00:00:00Z`))) return []; return [...new Set(subscription.reminderSettings.daysBefore)].sort((a,b)=>b-a).flatMap(daysBefore => { const date=addDays(subscription.nextRenewalDate,-daysBefore), key=`${subscription.id}:${subscription.nextRenewalDate}:${daysBefore}`; if(date<today||sent.has(key))return [];sent.add(key);return [{subscriptionId:subscription.id,date,daysBefore}] }) }) }

@@ -1,0 +1,12 @@
+export const BILLING_INTERVALS = ['weekly', 'monthly', 'quarterly', 'half_yearly', 'yearly', 'custom'] as const
+export const SUBSCRIPTION_STATUSES = ['trial', 'active', 'paused', 'cancelled', 'expired'] as const
+export const PAYMENT_METHODS = ['upi', 'card', 'net_banking', 'wallet', 'google_play', 'apple', 'direct_billing', 'other'] as const
+export const BILLING_PROVIDERS = ['google_play', 'apple_app_store', 'provider_website', 'telecom_bundle', 'third_party_bundle', 'other'] as const
+export type BillingInterval = typeof BILLING_INTERVALS[number]
+export type SubscriptionStatus = typeof SUBSCRIPTION_STATUSES[number]
+export type PaymentMethod = typeof PAYMENT_METHODS[number]
+export type BillingProvider = typeof BILLING_PROVIDERS[number]
+export type ReminderPreference = { daysBefore: number[]; enabled: boolean }
+export type Subscription = { id: string; name: string; provider: string; planName?: string; categoryId: string; priceMinorUnits: number; currencyCode: string; billingInterval: BillingInterval; customIntervalDays?: number; startDate: string; nextRenewalDate: string; status: SubscriptionStatus; paymentMethod: PaymentMethod; billingProvider: BillingProvider; managementUrl?: string; reminderSettings: ReminderPreference; notes?: string; createdAt: string; updatedAt: string; archivedAt?: string }
+export type SubscriptionInput = Omit<Subscription, 'id' | 'createdAt' | 'updatedAt' | 'archivedAt'>
+export type SubscriptionFilters = { query?: string; categoryId?: string; status?: SubscriptionStatus; includeArchived?: boolean }

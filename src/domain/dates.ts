@@ -1,0 +1,8 @@
+import type { BillingInterval, SubscriptionStatus } from './subscription'
+function parseDate(value: string) { const [year, month, day] = value.split('-').map(Number); return { year, month, day } }
+function iso(year: number, month: number, day: number) { return `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}` }
+function daysInMonth(year: number, month: number) { return new Date(Date.UTC(year, month, 0)).getUTCDate() }
+export function addCalendarMonths(date: string, months: number) { const { year, month, day } = parseDate(date); const index = year * 12 + month - 1 + months; const targetYear = Math.floor(index / 12); const targetMonth = (index % 12) + 1; return iso(targetYear, targetMonth, Math.min(day, daysInMonth(targetYear, targetMonth))) }
+export function addDays(date: string, days: number) { const { year, month, day } = parseDate(date); const result = new Date(Date.UTC(year, month - 1, day + days)); return iso(result.getUTCFullYear(), result.getUTCMonth() + 1, result.getUTCDate()) }
+export function nextRenewalDate(from: string, interval: BillingInterval, customDays?: number) { if (interval === 'weekly') return addDays(from, 7); if (interval === 'monthly') return addCalendarMonths(from, 1); if (interval === 'quarterly') return addCalendarMonths(from, 3); if (interval === 'half_yearly') return addCalendarMonths(from, 6); if (interval === 'yearly') return addCalendarMonths(from, 12); if (!customDays) throw new Error('Custom interval days are required'); return addDays(from, customDays) }
+export function isRecurringStatus(status: SubscriptionStatus) { return status === 'active' || status === 'trial' }
